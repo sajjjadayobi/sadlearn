@@ -44,6 +44,7 @@ def min_max_normalize(x, min=0, max=1):
     c = x - np.max(x)
     return ((a / b) * c) + max
 
+
 def l1_norm(x):
     """
     Returns
@@ -81,6 +82,3 @@ def l2_norm(x):
     size_of_vector = np.sqrt(np.sum(a ** 2, axis=1)).reshape(len(x), 1)
 
     return x / size_of_vector
-
-
-

@@ -1,51 +1,86 @@
 import numpy as np
 from Algorithm.preprocessing.normalize import l2_norm
 
-docs = ["machine learning is a road for artificial inelegance and this advanced is deep learning",
-        "python is a best programing language for artificial inelegance and you can ues",
-        "can javascript language developed frontend website and support by facebook company",
-        'you are watching machine learning course',
-        'word frequency array is apart of unsupervised learning from machine learning course',
-        'corsera is an online educational website']
+"""
+TF-IDF.py
+detail:  extraction numerical and features of text 
+
+author: sajjad ayobi
+see others in repository : sadlearn
+in URL: https://github.com/sajjjadayobi/sadlearn/
+
+date : 10/4/2018
+"""
 
 
-def remove_added_words(words):
-    added_words = ['a', '.', '(', ')', ',', '$', ' ', '?', '!']
+class TfidfVectorizer:
+    """
+    Convert a collection of raw documents to a matrix of TF-IDF features.
 
-    words = np.unique(np.sort(words))
-    for i, word in enumerate(words):
-        if word in added_words:
-            words = np.delete(words, i)
-    return words
+    Parameters
+    ----------
+    docs: get documents to form of list or np.ndarray for convert
+    docs sample : ['in method used for natural language processing','...']
 
+    Attributes
+    ----------
+    words: all words in the documents
 
-def get_all_words(docs):
-    words = np.empty(0)
-    for doc in docs:
-        words = np.append(words, doc.lower().split(' '))
-    words = remove_added_words(words)
-    return words
+    Notes
+    -----
+    most by import numpy as np
+    and from Algorithm.preprocessing.normalize import l2_norm
+    l2_norm use for normalization matrix
 
+    Return
+    ------
+    a matrix than abundance words in texts
 
-def count_words(doc, words):
-    doc = doc.split(' ')
-    counts = []
-    for word in words:
-        count = 0
-        for i in doc:
-            if i == word:
-                count += 1
-        counts.append(count)
-    return counts
+    Use
+    ---
+    tf = TfidfVectorizer(documents)
+    matrix = tf.transform()
+    """
 
+    def __init__(self, docs):
+        self.docs = docs
+        words = self.extract_words(docs)
 
-def tf_idf(docs):
-    words = get_all_words(docs)
-    arr = np.zeros((len(docs), len(words)))
-    for i, doc in enumerate(docs):
-        arr[i] = count_words(doc, words)
+        self.words = self.remove_surplus_chars(words)
 
-    return l2_norm(arr)
+    @staticmethod
+    def remove_surplus_chars(words):
+        added_words = ['a', '.', '(', ')', ',', '$', ' ', '?', '!']
 
+        words = np.unique(np.sort(words))
+        for i, word in enumerate(words):
+            if word in added_words:
+                words = np.delete(words, i)
+        return words
 
-print(tf_idf(docs))
+    @staticmethod
+    def extract_words(docs):
+        words = np.empty(0)
+        for doc in docs:
+            words = np.append(words, doc.lower().split(' '))
+        return words
+
+    def counts_words(self, doc):
+        doc = doc.split(' ')
+        counts = []
+        for word in self.words:
+            count = 0
+            for i in doc:
+                if i == word:
+                    count += 1
+            counts.append(count)
+        return counts
+
+    def transform(self):
+
+        arr = np.zeros((len(self.docs), len(self.words)))
+        for i, doc in enumerate(self.docs):
+            arr[i] = self.counts_words(doc)
+
+        transformed = l2_norm(arr)
+        return transformed
