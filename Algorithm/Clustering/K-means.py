@@ -1,26 +1,63 @@
 import numpy as np
-import matplotlib.pyplot as plt
+
+"""
+K-means.py
+detail:  Clustering Algorithm 
+
+author: sajjad ayobi
+see others in repository : sadlearn
+in URL: https://github.com/sajjjadayobi/sadlearn/
+
+date : 10/5/2018
+"""
 
 
+class KMeans:
+    """
+    K-means is a Algorithm for clustering
+        in this algorithm should entering number of clusters
 
-class K_means:
 
-    def __init__(self, values, n_classter):
-        self.x = values
-        self.classter = self.clasters(values, n_classter)
+    Parameters
+    ----------
+    n_cluster : int, optional, default: 2
+        The number of clusters to form as well as the number of
+        centroids to generate.
 
+
+    max_iter : int, default: 10
+        Maximum number of iterations of the k-means algorithm for a single run.
+
+
+    Attributes
+    ----------
+    x: list or np.ndarray
+        we data
+
+    clusters : array, [n_clusters, n_features]
+        Coordinates of cluster centers
+
+    values: array, [class1,class2,...]
+        list that classifies classes
+
+    Examples
+    --------
+    >>> km = KMeans(list(), n_cluster=3)
+    >>> new_values , centers = km.predict()
+    """
+
+    def __init__(self, x, n_cluster, max_iter=10):
+        self.x = x
+        self.max_iter = max_iter
+        self.clusters = self.extract_clusters(x, n_cluster)
 
     @staticmethod
-    def clasters(x, n_class):
-
-        max_ = x.max(axis=0)
-        min_ = x.min(axis=0)
+    def extract_clusters(x, n_class):
 
         np.random.seed(42)
-        centers = np.zeros((n_class, 2))
+        centers = np.zeros((n_class, x.shape[1]))
         for i, k in enumerate(centers):
-            centers[i] = np.random.randint(min_[0], max_[0]), np.random.randint(min_[1], max_[1])
-
+            centers[i] = x[np.random.randint(0, len(x))]
 
         return centers
 
@@ -31,211 +68,34 @@ class K_means:
             total += np.abs((x[j] - y[j]))
         return total
 
-
-    def refresh_classter(self, x):
-        c = np.zeros((len(self.classter), 2))
+    def refresh_clusters(self, x):
+        c = np.zeros((len(self.clusters), self.clusters.shape[1]))
         for i, k in enumerate(x):
             m = np.mean(k, axis=0)
-            c[i][0] = m[0]
-            c[i][1] = m[1]
-
+            for j in range(len(m)):
+                c[i][j] = m[j]
         return c
 
     def distance(self):
-
         new = []
-        for i in range(len(self.classter)):
-            new.append(np.empty(0))
-
-
+        for i in range(len(self.clusters)):
+            new.append([])
         for k in range(len(self.x)):
-            distance = np.empty(0)
-            for i in self.classter:
-                distance = np.append(distance, self.manhattan(self.x[k], i))
-            min_ = np.argmin(distance)
-            new[min_] = np.append(new[min_], self.x[k])
+            distance = []
+            for i in self.clusters:
+                distance.append(self.manhattan(self.x[k], i))
 
-        for i in range(len(new)):
-            new[i] = new[i].reshape(int(len(new[i]) / 2), 2)
+            new[np.argmin(distance)].append(list(self.x[k]))
 
         return new
 
-
-    def pred(self):
-        for i in range(20):
+    def predict(self):
+        for i in range(self.max_iter):
             x = self.distance()
-            self.classter = self.refresh_classter(x)
+            self.clusters = self.refresh_clusters(x)
 
-        return x, self.classter
-
-
-    def graph(self):
-        x, c = self.pred()
-        for i in range(len(c)):
-            plt.scatter(c[i][0], c[i][1], marker='x', s=150, c='black')
+        values = []
         for i in x:
-            plt.scatter(i[:, 0], i[:, 1], marker='o', s=50)
-        plt.show()
+            values.append(np.array(i))
 
-
-
-
-
-df = np.array([[5.1, 1.4],
-       [4.9, 1.4],
-       [4.7, 1.3],
-       [4.6, 1.5],
-       [5. , 1.4],
-       [5.4, 1.7],
-       [4.6, 1.4],
-       [5. , 1.5],
-       [4.4, 1.4],
-       [4.9, 1.5],
-       [5.4, 1.5],
-       [4.8, 1.6],
-       [4.8, 1.4],
-       [4.3, 1.1],
-       [5.8, 1.2],
-       [5.7, 1.5],
-       [5.4, 1.3],
-       [5.1, 1.4],
-       [5.7, 1.7],
-       [5.1, 1.5],
-       [5.4, 1.7],
-       [5.1, 1.5],
-       [4.6, 1. ],
-       [5.1, 1.7],
-       [4.8, 1.9],
-       [5. , 1.6],
-       [5. , 1.6],
-       [5.2, 1.5],
-       [5.2, 1.4],
-       [4.7, 1.6],
-       [4.8, 1.6],
-       [5.4, 1.5],
-       [5.2, 1.5],
-       [5.5, 1.4],
-       [4.9, 1.5],
-       [5. , 1.2],
-       [5.5, 1.3],
-       [4.9, 1.5],
-       [4.4, 1.3],
-       [5.1, 1.5],
-       [5. , 1.3],
-       [4.5, 1.3],
-       [4.4, 1.3],
-       [5. , 1.6],
-       [5.1, 1.9],
-       [4.8, 1.4],
-       [5.1, 1.6],
-       [4.6, 1.4],
-       [5.3, 1.5],
-       [5. , 1.4],
-       [7. , 4.7],
-       [6.4, 4.5],
-       [6.9, 4.9],
-       [5.5, 4. ],
-       [6.5, 4.6],
-       [5.7, 4.5],
-       [6.3, 4.7],
-       [4.9, 3.3],
-       [6.6, 4.6],
-       [5.2, 3.9],
-       [5. , 3.5],
-       [5.9, 4.2],
-       [6. , 4. ],
-       [6.1, 4.7],
-       [5.6, 3.6],
-       [6.7, 4.4],
-       [5.6, 4.5],
-       [5.8, 4.1],
-       [6.2, 4.5],
-       [5.6, 3.9],
-       [5.9, 4.8],
-       [6.1, 4. ],
-       [6.3, 4.9],
-       [6.1, 4.7],
-       [6.4, 4.3],
-       [6.6, 4.4],
-       [6.8, 4.8],
-       [6.7, 5. ],
-       [6. , 4.5],
-       [5.7, 3.5],
-       [5.5, 3.8],
-       [5.5, 3.7],
-       [5.8, 3.9],
-       [6. , 5.1],
-       [5.4, 4.5],
-       [6. , 4.5],
-       [6.7, 4.7],
-       [6.3, 4.4],
-       [5.6, 4.1],
-       [5.5, 4. ],
-       [5.5, 4.4],
-       [6.1, 4.6],
-       [5.8, 4. ],
-       [5. , 3.3],
-       [5.6, 4.2],
-       [5.7, 4.2],
-       [5.7, 4.2],
-       [6.2, 4.3],
-       [5.1, 3. ],
-       [5.7, 4.1],
-       [6.3, 6. ],
-       [5.8, 5.1],
-       [7.1, 5.9],
-       [6.3, 5.6],
-       [6.5, 5.8],
-       [7.6, 6.6],
-       [4.9, 4.5],
-       [7.3, 6.3],
-       [6.7, 5.8],
-       [7.2, 6.1],
-       [6.5, 5.1],
-       [6.4, 5.3],
-       [6.8, 5.5],
-       [5.7, 5. ],
-       [5.8, 5.1],
-       [6.4, 5.3],
-       [6.5, 5.5],
-       [7.7, 6.7],
-       [7.7, 6.9],
-       [6. , 5. ],
-       [6.9, 5.7],
-       [5.6, 4.9],
-       [7.7, 6.7],
-       [6.3, 4.9],
-       [6.7, 5.7],
-       [7.2, 6. ],
-       [6.2, 4.8],
-       [6.1, 4.9],
-       [6.4, 5.6],
-       [7.2, 5.8],
-       [7.4, 6.1],
-       [7.9, 6.4],
-       [6.4, 5.6],
-       [6.3, 5.1],
-       [6.1, 5.6],
-       [7.7, 6.1],
-       [6.3, 5.6],
-       [6.4, 5.5],
-       [6. , 4.8],
-       [6.9, 5.4],
-       [6.7, 5.6],
-       [6.9, 5.1],
-       [5.8, 5.1],
-       [6.8, 5.9],
-       [6.7, 5.7],
-       [6.7, 5.2],
-       [6.3, 5. ],
-       [6.5, 5.2],
-       [6.2, 5.4],
-       [5.9, 5.1]])
-
-
-km = K_means(df, n_classter=3)
-print(km.classter)
-km.graph()
-
-
-
+        return values, self.clusters
