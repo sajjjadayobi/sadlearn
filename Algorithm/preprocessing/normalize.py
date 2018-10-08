@@ -82,3 +82,16 @@ def l2_norm(x):
     size_of_vector = np.sqrt(np.sum(a ** 2, axis=1)).reshape(len(x), 1)
 
     return x / size_of_vector
+
+
+def StandardScaler(x):
+    """
+    Returns
+    -------
+    Standardize features by removing the mean and scaling to unit variance
+
+    Parameters
+    ----------
+    x: x is we data in shape Matrix
+    """
+    return (x - np.mean(x, axis=0)) / np.std(x, axis=0)
