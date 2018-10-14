@@ -1,4 +1,4 @@
 # sadlearn
-machine learning package
+machine learning tutorial package
 
-Important algorithm, learning in pure Python
+implement popular machine learning Algorithm with pure python and Numpy
