@@ -1,84 +1,62 @@
 import numpy as np
 
 """
-KNN.py
-detail:  Clustering Algorithm 
+KNearestNeighbors.py
+detail: Classifier Algorithm 
 
 author: sajjad ayobi
 see others in repository : sadlearn
 in URL: https://github.com/sajjjadayobi/sadlearn/
-
-date : 10/6/2018
 """
 
 
-def ocliden(x, y):
+class KNearestNeighbors:
     """
-     ocliden distance :
-     calculate distance between tow samples
-    """
-    total = 0
-    for j in range(len(y)):
-        total += np.sqrt((x[j] - y[j]) ** 2)
-    return total
-
-
-def manhattan(x, y):
-    """
-     manhattan distance :
-     calculate distance between tow samples
-    """
-    total = 0
-    for j in range(len(y)):
-        total += np.abs((x[j] - y[j]))
-    return total
-
-
-def minkowski(x, y, p):
-    """
-     minkowski distance :
-     calculate distance between tow samples
-    """
-    total = 0
-    for j in range(len(y)):
-        total += (np.abs((x[j] - y[j]) ** p).sum(axis=0)) ** (1 / p)
-    return total
-
-
-def knn(train_, test_, target_, k, method=ocliden):
-    """
-    K-Nearest neighbors: the algorithm for classification with use Nearest neighbors
+    K-Nearest Neighbors: the algorithm for classification with use Nearest neighbors
     https://en.wikipedia.org/wiki/K-nearest_neighbor_algorithm
 
     Parameters
     ----------
-    :param train_: train data for learning
-    :param test_: test data for validation and predict
-    :param target_: correct response of train data
-    :param k: number of neighbors
-    :param method: distance validations method
+    :param x: train data for learning
+    :param tests in predict: test data for validation and predict
+    :param y: correct response of train data
+    :param n_neighbors: number of neighbors
 
     :return: predict values for test data
 
     Examples
     --------
-    >>> predict = knn(train_set, test_set, targets, 3)
-    >>> print(predict)
+    >>> clf = KNearestNeighbors(x, y, 5)
+    >>> y_pred = clf.predict(tests)
     """
-    predict = []
-    for test in test_:
-        space = np.empty(0)
-        # getting all distance between test_ & train_
-        for j in range(len(train_)):
-            space = np.append(space, method(train_[j], test))
+    def __init__(self, x, y, n_neighbors):
+        self.x = x
+        self.y = y
+        self.k = n_neighbors
 
-        result = []
-        for j in range(k):
-            index = np.where(space == space.min())[0][0]
-            result.append(target_[index])
-            # delete minimum
-            space = np.delete(space, [index])
+    @staticmethod
+    def ocliden(x, y):
+        total = 0
+        for j in range(len(y)):
+            total += np.sqrt((x[j] - y[j]) ** 2)
+        return total
 
-        predict.append(np.median(result).astype(int))
+    def predict(self, tests):
 
-    return predict
+        pred = []
+        for test in tests:
+            distance = np.empty(0)
+            # get all distance between test_ & train_s
+            for j in range(len(self.x)):
+                distance = np.append(distance, self.ocliden(self.x[j], test))
+
+            min_dict = []
+            for j in range(self.k):
+                index = np.where(distance == distance.min())[0][0]
+                min_dict.append(self.y[index])
+                # delete min
+                distance = np.delete(distance, [index])
+
+            pred.append(np.median(min_dict).astype(int))
+
+        return pred
