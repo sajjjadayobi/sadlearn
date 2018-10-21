@@ -40,6 +40,9 @@ class KMeans:
     values: array, [class1,class2,...]
         list that classifies classes
 
+    inertia :  float
+        Sum of squared distances of samples to their closest cluster center.
+
     Examples
     --------
     >>> km = KMeans(list(), n_cluster=3)
@@ -49,16 +52,13 @@ class KMeans:
     def __init__(self, x, n_cluster, max_iter=10):
         self.x = x
         self.max_iter = max_iter
-        self.clusters = self.extract_clusters(x, n_cluster)
+        self.inertia_ = None
+        self.clusters = self.random_clusters(x, n_cluster)
 
     @staticmethod
-    def extract_clusters(x, n_class):
-
+    def random_clusters(x, n_cluster):
         np.random.seed(42)
-        centers = np.zeros((n_class, x.shape[1]))
-        for i, k in enumerate(centers):
-            centers[i] = x[np.random.randint(0, len(x))]
-
+        centers = np.array(x[np.random.choice(range(len(x)), size=n_cluster, replace=False)])
         return centers
 
     @staticmethod
@@ -89,13 +89,16 @@ class KMeans:
 
         return new
 
+    def inertia(self, x):
+        distance = []
+        for i, v in enumerate(x):
+            distance.append(np.sum(np.square(v - self.clusters[i])))
+        return np.sum(distance)
+
     def predict(self):
         for i in range(self.max_iter):
             x = self.distance()
             self.clusters = self.refresh_clusters(x)
 
-        values = []
-        for i in x:
-            values.append(np.array(i))
-
-        return values, self.clusters
+        self.inertia_ = self.inertia(x)
+        return x

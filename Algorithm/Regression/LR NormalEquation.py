@@ -8,7 +8,8 @@ class LinerRegressionNE:
 
     @staticmethod
     def normal_equation(x, y):
-        theta = np.linalg.pinv(x.T @ x) @ x.T @ y
+        # or inv(x.T @ x) @ x.T @ y
+        theta = np.linalg.pinv(x)@ y
         return theta
 
     def fit(self, x, y):
