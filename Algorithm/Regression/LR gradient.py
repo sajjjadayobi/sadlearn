@@ -2,48 +2,84 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def sum_square_error(theta, x, y):
-    slop = []
-    for i, t in enumerate(theta[1:]):
-        slop.append(x[:, i] * t)
-    y_pred = (np.sum(slop, axis=0) + theta[0]).reshape(-1, 1)
+class LinReg_gradient_descent:
 
-    ssr = np.sum(np.square(y_pred - y)) / len(x)
-    return ssr, y_pred
+    """
+    Linear Regression with gradient descent
 
+    Parameter
+    ---------
+    n_iter: int
+    number of iteration Gradient Descent
 
-def gradient_descent(theta, x, y, alpha):
-    x0 = 1
-    new_theta = np.empty(0)
-    for i in range(len(theta)):
-        gradient = np.sum(- (2 / len(y)) * x0 * (y - ((theta[1:] * x) + theta[0])))
-        new_theta = np.append(new_theta, gradient * alpha)
-        x0 = x
+    learning_rate: float
+    alpha in Gradient Descent Algorithm
 
-    theta -= new_theta
-    return theta
+    reg: float
+    coef of regularization
+
+    report: bool
+    showing report of each iter in Gradient Descent
 
 
-def fit_best_line(x, y, alpha):
-    theta = [1 for _ in range(x.shape[1] + 1)]
+    Examples
+    --------
+    >>> clf = LinReg_gradient_descent()
+    >>> clf.fit(x, y)
+    >>> y_pred = clf.predict(x_test)
+    """
 
-    error = np.inf
-    for i in range(1000000):
-        theta = gradient_descent(theta, x, y, alpha)
-        new_error, y_pred = sum_square_error(theta, x, y)
-        if new_error + 0.00009 >= error:
-            print("finish iterator :", i)
-            break
-        error = new_error
+    def __init__(self, n_iter=1000, learning_rate=0.00001, reg=0.0, report=True):
+        self.weight = None
+        self.lr = learning_rate
+        self.n_iter = n_iter
+        self.report = report
+        self.reg = reg
 
-    return y_pred, error
+    #  x = x0 + x added bias
+    @staticmethod
+    def simplification(x):
+        return np.concatenate((np.ones((x.shape[0], 1)), x), axis=1)
 
+    # Normalize data
+    @staticmethod
+    def StandardScaler(x):
+        return (x - np.mean(x, axis=0)) / np.std(x, axis=0)
 
-X = np.arange(0, 10).reshape(-1, 1)
-Y = np.array([17, 18, 20, 19, 20, 21, 20, 19, 18, 20]).reshape(-1, 1)
+    # Optimize Method
+    @staticmethod
+    def gradient_descent(x, y_pred, y):
+        return x.T @ (y_pred - y)
 
-Y_pred, Error = fit_best_line(X, Y, 0.033)
+    # Loss Function
+    def sum_square_error(self, y, y_pred, w):
+        error = y_pred - y
+        loss = ((error.T @ error) * 0.5)[0][0]
+        # added Regularize
+        return loss + (self.reg * (w.T @ w)[0][0])
 
-plt.scatter(X[:, 0], Y)
-plt.plot(Y_pred[:, 0], c='r')
-plt.show()
+    def fit(self, x, y):
+        # PreProcessing
+        x = self.simplification(self.StandardScaler(x))
+        y = y.reshape(-1, 1)
+        w = 0.001 * np.random.randn(x.shape[1], 1)
+
+        report_time = self.n_iter / 10
+        for i in range(self.n_iter):
+            # Loss
+            y_pred = x @ w
+            error = self.sum_square_error(y, y_pred, w)
+            # Optimize Weight
+            gd = self.gradient_descent(x, y_pred, y)
+            w[0] = w[0] - (self.lr * gd[0])
+            w[1:] = w[1:] - (self.lr * (gd[1:] + (self.reg * w[1:])))
+
+            # Report
+            if self.report and i % report_time == 0:
+                print('\t error in iter {} = {}'.format(i, error))
+
+        self.weight = w
+
+    def predict(self, x_test):
+        x = self.simplification(self.StandardScaler(x_test))
+        return x @ self.weight
