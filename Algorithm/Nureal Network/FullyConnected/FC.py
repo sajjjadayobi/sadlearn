@@ -1,3 +1,11 @@
+"""
+Fully Connected Networks
+detail: Classifier Algorithm 
+author: sajjad ayobi
+see others in repository : sadlearn
+in URL: https://github.com/sajjjadayobi/sadlearn/
+"""
+
 # self module
 from .optim import *
 from .layers import *
