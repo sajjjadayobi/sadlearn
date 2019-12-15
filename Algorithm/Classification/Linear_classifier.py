@@ -4,6 +4,7 @@ import numpy as np
 class liner_classifier:
 
      """
+    At the base of all neural networks
     Liner Classifier with Gradient descent Algorithm
     and find best Weight for test data
     note: better use Normalized data
@@ -59,7 +60,7 @@ class liner_classifier:
     # computing Derivative with Respect to input
     @staticmethod
     def affine_backward(x, d_out):
-        d_weight = np.dot(x.T, d_out)
+        d_weight = x.T @ d_out
         d_bais = np.sum(d_out, axis=0)
         return d_weight, d_bais
 
