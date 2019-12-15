@@ -13,6 +13,7 @@ this implementation a little bit similar to sklearn
     |   |    ├── K Nearest Neighbors
     |   |    ├── Linear classifier
     |   |    ├── LogReg binary
+    |   |    |── Naive Bayesian
     |   |
     │   ├── Clustering           
     |   |    ├── K Means
