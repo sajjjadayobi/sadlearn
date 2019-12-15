@@ -2,41 +2,36 @@ import numpy as np
 
 
 class liner_classifier:
-    """
+
+     """
     Liner Classifier with Gradient descent Algorithm
     and find best Weight for test data
-
     note: better use Normalized data
-
     Parameter
     ---------
     batch_size: int
     size of batch in Gradient descent
-
     n_iter: int
     number of iteration Gradient Descent
-
     learning_rate: float
     alpha in Gradient Descent Algorithm
-
     report: bool
     showing report of each iter in Gradient Descent
-
     Return
     ------
     predicted label for data
-
     Examples
     --------
     >>> clf = liner_classifier()
     >>> clf.fit(x, y)
     >>> y_pred = clf.predict(x_test)
     """
-
-    def __init__(self, batch_size, n_iter=1000, learning_rate=0.00001, report=True):
+        
+    def __init__(self, batch_size, n_iter=1000, learning_rate=0.001, report=True, class_names=None):
         self.weight = None
         self.bias = None
         self.batch_size = batch_size
+        self.class_names = class_names
         self.lr = learning_rate
         self.n_iter = n_iter
         self.report = report
@@ -73,7 +68,6 @@ class liner_classifier:
         w = np.random.randn(len(set(y)), x.shape[1]) * 0.001
         b = np.zeros((len(set(y)),))
 
-        report_time = int(self.n_iter / 10)
         for i in range(self.n_iter + 1):
             index = np.random.choice(x.shape[0], self.batch_size, replace=False)
             x_batch = x[index]
@@ -88,17 +82,24 @@ class liner_classifier:
             b -= self.lr * db
 
             # report
-            if self.report and i % report_time == 0:
+            if self.report:
                 y_pred = np.argmax(scores, axis=1)
                 score = np.mean(y_pred == y_batch)
                 scores = self.affine_forward(x, w, b)
                 y_pred = np.argmax(scores, axis=1)
                 train = np.mean(y_pred == y)
-                print('\t  iter %4d loss= %2.5f | batch= %0.2f | all= %0.3f' % (i, loss, score, train))
+                print('\t  iter %4d loss: %2.5f | batch_acc: %0.2f | all_acc: %0.3f' % (i, loss, score, train))
 
         self.weight = w
         self.bias = b
 
     def predict(self, x):
+        if len(x.shape)==1:
+            x = x[np.newaxis, :]
+            
         scores = self.affine_forward(x, self.weight, self.bias)
-        return np.argmax(scores, axis=1)
+        y = np.argmax(scores, axis=1)
+        
+        if isinstance(self.class_names, np.ndarray):
+            return self.class_names[y]
+        return y
