@@ -27,7 +27,8 @@ this implementation a little bit similar to sklearn
     |   |   ├── convolution Layer
     |   |   
     |   ├── Regression
-    |   |   ├── Regression Logistic
+    |   |   ├── Regression SGD
+    |   |   ├── Regression Normal Equation
     |   |   ├── K Neighbors Regression
     |   |
     |   ├── Preprocessing
