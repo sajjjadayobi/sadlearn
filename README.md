@@ -1,6 +1,4 @@
-# SadLearn: machine learning tutorial package
-
-implement popular machine learning Algorithm with pure python and Numpy (similar to **sklearn**)
+# SadLearn: machine learning Algorithms with pure python and Numpy (similar to **sklearn**)
 
 ## Structure:
 
