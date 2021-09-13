@@ -1,5 +1,14 @@
 # SadLearn: machine learning Algorithms with pure python and Numpy (similar to **sklearn**)
 
+## A little example of using MLPs algorithm
+
+```python
+import FullyConnectedNet
+# MLP with 3 hidden layers
+clf = FullyConnectedNet(hidden_dims=[100, 100, 100], num_class=10, num_epoch=10)
+clf.train((x_train, y_train), (x_test, y_test))
+```
+
 ## Structure:
 
     ├── Algorithm   
