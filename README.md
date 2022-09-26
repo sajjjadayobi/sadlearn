@@ -1,7 +1,6 @@
-# SadLearn: machine learning Algorithms with pure python and Numpy (similar to **sklearn**)
+# SadLearn: machine learning Algorithms with Numpy
 
-## A little example of using MLPs algorithm
-
+- A little example of using MLPs algorithm
 ```python
 import FullyConnectedNet
 # MLP with 3 hidden layers
